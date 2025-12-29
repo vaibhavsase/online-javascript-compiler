@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vaishu's Online JavaScript Compiler</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+      margin: 0; padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    header {
+      width: 100%; max-width: 900px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      color: #00ffff;
+      user-select: none;
+    }
+    #themeToggle {
+      background: #00ffff;
+      border: none;
+      color: #121212;
+      padding: 10px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(0,255,255,0.4);
+      user-select: none;
+      transition: all 0.3s ease;
+    }
+    #themeToggle:hover {
+      filter: brightness(1.1);
+    }
+    main {
+      width: 100%; max-width: 900px; flex: 1;
+      display: flex; flex-direction: column;
+    }
+    main.split {
+      flex-direction: row;
+      gap: 20px;
+    }
+    #editor, #output-console {
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,255,255,0.5);
+    }
+    #editor {
+      height: 300px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    #output-console {
+      background: #0a0a0a;
+      padding: 20px;
+      min-height: 150px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 1rem;
+      box-shadow: 0 0 30px rgba(0,255,255,0.7);
+      white-space: pre-wrap;
+      overflow-y: auto;
+      user-select: text;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+    .btn {
+      padding: 12px 30px;
+      border-radius: 30px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,255,255,0.4);
+      transition: 0.3s ease;
+    }
+    .btn.run {
+      background: #00ffff;
+      color: #121212;
+    }
+    .btn.layout {
+      background: #ff466a;
+      color: white;
+    }
+    .btn:hover {
+      filter: brightness(1.1);
+    }
+    main.split #editor, main.split #output-console {
+      flex: 1;
+      height: auto;
+      margin-bottom: 0;
+    }
+    body.light-mode {
+      background: #fafafa;
+      color: #222;
+    }
+    body.light-mode header h1 {
+      color: #ff466a;
+    }
+    body.light-mode #themeToggle {
+      background: #ff466a;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(255,70,106,0.5);
+    }
+    body.light-mode #output-console {
+      background: #fff0f3;
+      color: #ff466a;
+      box-shadow: 0 0 30px rgba(255,70,106,0.7);
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.38.0/min/vs/loader.js"></script>
+</head>
+<body>
+
+<header>
+  <h1>🔥 JavaScript Compiler 🔥</h1>
+  <button id="themeToggle">🌗 Toggle Theme</button>
+</header>
+
+<div class="controls">
+  <button id="runBtn" class="btn run">▶️ Run</button>
+  <button id="layoutToggle" class="btn layout">🔀 Layout</button>
+</div>
+
+<main id="main">
+  <div id="editor"></div>
+  <pre id="output-console">Console output </pre>
+</main>
+
+<script>
+  require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.38.0/min/vs' }});
+  require(['vs/editor/editor.main'], function() {
+    window.editor = monaco.editor.create(document.getElementById('editor'), {
+      value: "console.log('welcome to my online Javascript compiler!!');",
+      language: 'javascript',
+      theme: 'vs-dark',
+      automaticLayout: true,
+      minimap: { enabled: false },
+      fontSize: 16,
+      fontFamily: 'Source Code Pro, monospace',
+      wordWrap: 'on',
+    });
+
+    const outputConsole = document.getElementById('output-console');
+    const runBtn = document.getElementById('runBtn');
+    const layoutBtn = document.getElementById('layoutToggle');
+    const main = document.getElementById('main');
+
+    function runCode() {
+      outputConsole.textContent = '';
+      const code = editor.getValue();
+
+      const originalLog = console.log;
+      console.log = function(...args) {
+        outputConsole.textContent += args.join(' ') + '\n';
+        originalLog.apply(console, args);
+      };
+
+      try {
+        new Function(code)();
+      } catch (err) {
+        outputConsole.textContent += '❌ Error: ' + err.message;
+      }
+      console.log = originalLog;
+    }
+
+    runBtn.addEventListener('click', runCode);
+
+    layoutBtn.addEventListener('click', () => {
+      main.classList.toggle('split');
+    });
+
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      if(document.body.classList.contains('light-mode')) {
+        document.body.classList.remove('light-mode');
+        monaco.editor.setTheme('vs-dark');
+      } else {
+        document.body.classList.add('light-mode');
+        monaco.editor.setTheme('vs-light');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
