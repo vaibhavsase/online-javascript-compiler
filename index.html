@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vaishu's Online JavaScript Compiler</title>
+  <title>Online JavaScript Compiler</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -141,7 +141,7 @@
   require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.38.0/min/vs' }});
   require(['vs/editor/editor.main'], function() {
     window.editor = monaco.editor.create(document.getElementById('editor'), {
-      value: "console.log('Vaibhav');",
+      value: "console.log('Welcome');",
       language: 'javascript',
       theme: 'vs-dark',
       automaticLayout: true,
